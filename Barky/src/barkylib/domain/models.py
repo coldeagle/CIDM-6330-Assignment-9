@@ -36,7 +36,6 @@ class Bookmark:
         self.events = list()  # type: List[events.Event]
 
     def default(self, o):
-        print(self.events)
         return o.__dict__
 
     def to_json (self):

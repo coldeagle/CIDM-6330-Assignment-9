@@ -96,18 +96,15 @@ class SqlAlchemyRepository(AbstractRepository):
 
     def add_one(self, bookmark: Bookmark) -> None:
         bookmarks = list()
-        print('add_one')
         if bookmark:
             bookmarks.append(bookmark)
             self.add_many(bookmarks)
 
     def add_many(self, bookmarks: list[Bookmark]) -> None:
-        print('add_many')
         if bookmarks:
             #self.Session.add_all(bookmarks)
 
             for bookmark in bookmarks:
-                print(bookmark.id)
                 self.Session.add(bookmark)
                 self.Session.commit()
                 bookmark.events.append(events.BookmarkAdded(
@@ -117,13 +114,10 @@ class SqlAlchemyRepository(AbstractRepository):
                     url=bookmark.url,
                     id=bookmark.id,
                 ))
-                print('events')
                 print(bookmark.events)
                 self.seen.add(bookmark)
-                print('added to seen')
 
     def delete_one(self, bookmark: Bookmark) -> None:
-        print('delete one')
         bookmarks = list()
         if bookmark:
             bookmarks.append(bookmark)
@@ -131,14 +125,10 @@ class SqlAlchemyRepository(AbstractRepository):
         self.delete_many(bookmarks)
 
     def delete_many(self, bookmarks: list[Bookmark]) -> None:
-        print('delete many')
         if bookmarks:
             ids = list()
             for bookmark in bookmarks:
-                print('about to add to seen')
-                print(isinstance(bookmark, Bookmark))
                 self.seen.add(bookmark)
-                print('seen added')
                 try:
                     ids.append(bookmark.id)
                     bookmark.events.append(events.BookmarkDeleted(id=bookmark.id))
@@ -147,15 +137,12 @@ class SqlAlchemyRepository(AbstractRepository):
                     bookmark.events.append(events.BookmarkDeleted(id=bookmark['id']))
 
             if ids:
-                print('about to execute delete')
                 stmt = delete(Bookmark).where(Bookmark.id.in_(ids))
                 self.Session.execute(stmt)
                 self.Session.commit()
 
     def get(self, id: int) -> Bookmark:
-        print('get')
         bookmark = self.find_first(select(Bookmark).where(Bookmark.id == id))
-        print(bookmark)
         if bookmark:
             self.seen.add(bookmark)
 
@@ -170,7 +157,6 @@ class SqlAlchemyRepository(AbstractRepository):
             return self.update_many(bookmarks)
 
     def update_many(self,  bookmarks: list[models.Bookmark]) -> int:
-        print('update_many')
         if bookmarks is None or not bookmarks:
             return 400
         else:
@@ -199,15 +185,11 @@ class SqlAlchemyRepository(AbstractRepository):
                 return 400
 
     def find_first(self, query) -> Bookmark:
-        print('find_first')
-        print('query')
         print(query)
         if query is None:
             bookmarks = None
         else:
             bookmarks = self.find_all(query)
-        print('bookmarks')
-        print(bookmarks)
         if bookmarks:
             print(bookmarks[0].id)
             return bookmarks[0]

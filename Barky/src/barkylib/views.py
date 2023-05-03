@@ -12,7 +12,6 @@ def get_bookmarks(uow: unit_of_work.SqlAlchemyUnitOfWork, bookmark_id: int):
             results = uow.session.execute(text('SELECT id, title, url, notes, date_edited, date_added FROM bookmarks_view'))
 
     return_list = list()
-    print('printing results')
     for r in results:
         return_list.append(dict(id=r[0], title=r[1], url=r[2], notes=r[3], date_edited=r[4], date_added=r[5]))
 

@@ -53,9 +53,7 @@ class FlaskBookmarkAPI(AbstractBookMarkAPI):
                 return json.dumps(bookmarks[0]), 200
 
         except Exception as e:
-            print('one except')
             traceback.print_exception(*sys.exc_info())
-            print(e)
             return str(e), 400
 
     # @app.route("/api/all")
@@ -102,7 +100,6 @@ class FlaskBookmarkAPI(AbstractBookMarkAPI):
 
             return 'OK', 201
         except Exception as e:
-            print('add except')
             traceback.print_exception(*sys.exc_info())
             return str(e), 400
 
@@ -110,7 +107,6 @@ class FlaskBookmarkAPI(AbstractBookMarkAPI):
         return self.add(bookmark=self.get_bookmark_from_json(request.get_json(force=True)))
 
     def delete(self, bookmark):
-        print('delete')
         try:
             id = None
             try:
@@ -121,13 +117,11 @@ class FlaskBookmarkAPI(AbstractBookMarkAPI):
             cmd = commands.DeleteBookmarkCommand(
                 id=id
             )
-            print('cmd')
             bus.handle(cmd)
 
             return 'OK', 201
 
         except Exception as e:
-            print('delete except')
             traceback.print_exception(*sys.exc_info())
             print(e)
             return str(e), 400
@@ -141,18 +135,11 @@ class FlaskBookmarkAPI(AbstractBookMarkAPI):
             return str(e), 400
 
     def update_bookmark(self, id):
-        print('update_bookmark')
-        print(request.get_json(force=True))
         bookmark = self.get_bookmark_from_json(request.get_json(force=True))
         bookmark.id = id
-        print('is instance of bookmark?')
-        print(isinstance(bookmark, Bookmark))
-        print(bookmark.id)
         return self.update(bookmark=bookmark)
 
     def update(self, bookmark):
-        print('update')
-        print(bookmark.id)
         try:
             cmd = commands.EditBookmarkCommand(
                 id=bookmark.id,
@@ -168,13 +155,11 @@ class FlaskBookmarkAPI(AbstractBookMarkAPI):
             return 'OK', 201
 
         except Exception as e:
-            print('update except')
             traceback.print_exception(*sys.exc_info())
             print(e)
             return str(e), 400
 
     def get_bookmark_from_json(self, req_json) -> Bookmark:
-        print(req_json.get('id'))
         return Bookmark(
             id=req_json.get('id'),
             title=req_json.get('title'),
